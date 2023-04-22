@@ -1,4 +1,4 @@
-import ReactReconciler from "react-reconciler";
+import ReactReconciler from 'react-reconciler';
 
 const reconciler = ReactReconciler({
     supportsMutation: true,
@@ -6,12 +6,20 @@ const reconciler = ReactReconciler({
     supportsPersistence: false,
     supportsHydration: false,
 
-    // Callbacks para nuestro ejemplo simple
-    createInstance: (type, props) => null,
-    createTextInstance: (text) => null,
-    appendChild: (parent, child) => null,
-    appendInitialChild: (parent, child) => null,
-    appendChildToContainer: (parent, child) => null,
+    createInstance: (type, props) => {
+        console.log('createInstance', { type, props });
+        const element = document.createElement(type);
+        Object.keys(props).forEach((prop) => {
+            if (!["children", "onClick", "key"].includes(prop)) {
+                element[prop] = props[prop];
+            }
+        });
+        return element;
+    },
+    createTextInstance: (text) => document.createTextNode(text),
+    appendChild: (parent, child) => parent.appendChild(child),
+    appendInitialChild: (parent, child) => parent.appendChild(child),
+    appendChildToContainer: (parent, child) => parent.appendChild(child),
 
     // Rest....
     finalizeInitialChildren: () => false,
@@ -34,10 +42,9 @@ const reconciler = ReactReconciler({
     getInstanceFromScope: () => null,
     detachDeletedInstance: () => null,
     clearContainer: () => null,
-})
+});
 
 const render = (element, container) => {
-    console.log('render', { element, container });
     const root = reconciler.createContainer(container, 0, null, false, false, '', (error) => console.log(error), null);
     reconciler.updateContainer(element, root, null, null);
 };
