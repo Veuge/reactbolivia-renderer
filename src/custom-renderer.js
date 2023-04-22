@@ -8,7 +8,15 @@ const reconciler = ReactReconciler({
 
     createInstance: (type, props) => {
         console.log('createInstance', { type, props });
-        const element = document.createElement(type);
+        let element;
+        if (type === 'webcam') {
+            element = document.createElement('video');
+            element.autoplay = true;
+            element.playsInline = true;
+            navigator.mediaDevices.getUserMedia({ video: true }).then(stream => element.srcObject = stream);
+        } else {
+            element = document.createElement(type);
+        }
         Object.keys(props).forEach((prop) => {
             if (!["children", "onClick", "key"].includes(prop)) {
                 element[prop] = props[prop];
